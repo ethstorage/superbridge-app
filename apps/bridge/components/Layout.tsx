@@ -172,14 +172,14 @@ export function Layout({ children }: { children: any }) {
       <AnimatePresence mode="sync" initial={false}>
         {displayTransactions ? null : children}
       </AnimatePresence>
-      {/* Transactions container */}
-      <AnimatePresence mode="sync" initial={false}>
-        {displayTransactions ? (
-          <OpenActivity key="transactionItemsContainer" />
-        ) : (
-          <ClosedActivity key="closeActivityBtn" />
-        )}
-      </AnimatePresence>
+      {/*/!* Transactions container *!/*/}
+      {/*<AnimatePresence mode="sync" initial={false}>*/}
+      {/*  {displayTransactions ? (*/}
+      {/*    <OpenActivity key="transactionItemsContainer" />*/}
+      {/*  ) : (*/}
+      {/*    <ClosedActivity key="closeActivityBtn" />*/}
+      {/*  )}*/}
+      {/*</AnimatePresence>*/}
       <SettingsModal open={settingsModal} setOpen={setSettingsModal} />
       <Footer />
     </div>
