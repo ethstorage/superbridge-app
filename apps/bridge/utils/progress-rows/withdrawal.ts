@@ -4,12 +4,15 @@ import { P, match } from "ts-pattern";
 import { BridgeWithdrawalDto } from "@/codegen/model";
 import { MessageStatus } from "@/constants/optimism-message-status";
 import {
+  addPeriods,
   getFinalizationPeriod,
+  getPeriod,
   getProvePeriod,
 } from "@/hooks/use-finalization-period";
 import { usePeriodText } from "@/hooks/use-period-text";
 import { usePendingTransactions } from "@/state/pending-txs";
 
+import { OptimismDeploymentDto } from "../is-mainnet";
 import { transactionLink } from "../transaction-link";
 import { ButtonComponent, ExpandedItem, ProgressRowStatus } from "./common";
 import { getRemainingTimePeriod } from "./get-remaining-period";
@@ -20,12 +23,12 @@ export const useOptimismWithdrawalProgressRows = () => {
   const transformPeriodText = usePeriodText();
   const { t } = useTranslation();
 
-  return (w: BridgeWithdrawalDto | undefined): ExpandedItem[] => {
-    const finalizationPeriod = getFinalizationPeriod(
-      w?.deployment ?? null,
-      false
-    );
-    const provePeriod = getProvePeriod(w?.deployment ?? null);
+  return (
+    w: BridgeWithdrawalDto | undefined,
+    deployment: OptimismDeploymentDto | null
+  ): ExpandedItem[] => {
+    const finalizationPeriod = getFinalizationPeriod(deployment, false);
+    const provePeriod = getProvePeriod(deployment);
     const pendingProve = pendingProves[w?.id ?? ""];
     const pendingFinalise = pendingFinalises[w?.id ?? ""];
     const prove = match({ w, pendingProve })
@@ -39,7 +42,7 @@ export const useOptimismWithdrawalProgressRows = () => {
           label: t("activity.proving"),
           status: ProgressRowStatus.InProgress,
           buttonComponent: undefined,
-          link: transactionLink(pendingProve!, w!.deployment.l1),
+          link: transactionLink(pendingProve!, deployment?.l1),
         })
       )
       .with({ w: { status: MessageStatus.READY_TO_PROVE } }, () => ({
@@ -93,7 +96,7 @@ export const useOptimismWithdrawalProgressRows = () => {
           label: t("activity.finalizing"),
           status: ProgressRowStatus.InProgress,
           buttonComponent: undefined,
-          link: transactionLink(pendingFinalise!, w!.deployment.l1),
+          link: transactionLink(pendingFinalise!, deployment?.l1),
         })
       )
       .with({ status: MessageStatus.READY_FOR_RELAY }, () => ({
@@ -116,8 +119,9 @@ export const useOptimismWithdrawalProgressRows = () => {
       }));
 
     const waitingForStateRootText = (() => {
+      // weird case, not sure what it's for
       if (!w?.status || w.status < MessageStatus.STATE_ROOT_NOT_PUBLISHED) {
-        return transformPeriodText("transferTime", {}, finalizationPeriod);
+        return transformPeriodText("transferTime", {}, provePeriod);
       }
 
       if (w.status > MessageStatus.STATE_ROOT_NOT_PUBLISHED) {
@@ -145,10 +149,24 @@ export const useOptimismWithdrawalProgressRows = () => {
         return "";
       }
 
-      const remainingTimePeriod = getRemainingTimePeriod(
+      let remainingTimePeriod = getRemainingTimePeriod(
         w.prove.timestamp,
         finalizationPeriod
       );
+      if (
+        deployment?.contractAddresses.disputeGameFactory &&
+        deployment?.config.disputeGameFinalityDelaySeconds &&
+        w.prove.game?.resolvedAt
+      ) {
+        remainingTimePeriod = addPeriods(
+          remainingTimePeriod,
+          getRemainingTimePeriod(
+            w.prove.game.resolvedAt,
+            getPeriod(deployment.config.disputeGameFinalityDelaySeconds)
+          )
+        );
+      }
+
       if (!remainingTimePeriod) return "";
       return transformPeriodText("activity.remaining", {}, remainingTimePeriod);
     })();
@@ -164,7 +182,9 @@ export const useOptimismWithdrawalProgressRows = () => {
       {
         label:
           w?.status === MessageStatus.STATE_ROOT_NOT_PUBLISHED
-            ? t("activity.waitingForStateRoot")
+            ? deployment?.contractAddresses.disputeGameFactory
+              ? t("activity.waitingForDisputeGame")
+              : t("activity.waitingForStateRoot")
             : t("activity.stateRootPublished"),
         status: w
           ? w?.status === MessageStatus.STATE_ROOT_NOT_PUBLISHED

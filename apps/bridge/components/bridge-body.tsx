@@ -18,19 +18,20 @@ import {
 import { useBridgeControllerTrack } from "@/codegen";
 import { currencySymbolMap } from "@/constants/currency-symbol-map";
 import { useAllowance } from "@/hooks/use-allowance";
-import { useAllowanceNft } from "@/hooks/use-allowance-nft";
 import { useApprove } from "@/hooks/use-approve";
-import { useApproveNft } from "@/hooks/use-approve-nft";
 import { useTokenBalance } from "@/hooks/use-balances";
+import { useBaseNativeTokenBalance } from "@/hooks/use-base-native-token-balance";
 import { useBridge } from "@/hooks/use-bridge";
-import { useBridgeFee } from "@/hooks/use-bridge-fee";
+import { useBridgeLimit } from "@/hooks/use-bridge-limit";
 import { useFromChain, useToChain } from "@/hooks/use-chain";
+import { useDeployment } from "@/hooks/use-deployment";
 import { useIsCustomToken } from "@/hooks/use-is-custom-token";
 import { useIsCustomTokenFromList } from "@/hooks/use-is-custom-token-from-list";
 import { useNativeToken } from "@/hooks/use-native-token";
 import { useTokenPrice } from "@/hooks/use-prices";
-import { useStatusCheck } from "@/hooks/use-status-check";
+import { useRequiredCustomGasTokenBalance } from "@/hooks/use-required-custom-gas-token-balance";
 import { useSelectedToken } from "@/hooks/use-selected-token";
+import { useStatusCheck } from "@/hooks/use-status-check";
 import { useSwitchChain } from "@/hooks/use-switch-chain";
 import { useActiveTokens } from "@/hooks/use-tokens";
 import { useTransferTime } from "@/hooks/use-transfer-time";
@@ -42,7 +43,6 @@ import { buildPendingTx } from "@/utils/build-pending-tx";
 import { isEth, isNativeToken } from "@/utils/is-eth";
 import { isNativeUsdc } from "@/utils/is-usdc";
 
-import { useDeployment } from "@/hooks/use-deployment";
 import { FromTo } from "./FromTo";
 import { AddressModal } from "./address-modal";
 import { ConfirmationModal } from "./confirmation-modal";
@@ -50,12 +50,12 @@ import { CctpBadge } from "./cttp-badge";
 import { DepositFees } from "./fees/deposit-fees";
 import { WithdrawFees } from "./fees/withdraw-fees";
 import { NftImage } from "./nft";
+import { NoGasModal } from "./no-gas-modal";
 import { TokenIcon } from "./token-icon";
 import { TokenModal } from "./tokens/Modal";
 import { CustomTokenImportModal } from "./tokens/custom-token-import-modal";
 import { Button } from "./ui/button";
 import { WithdrawSettingsModal } from "./withdraw-settings/modal";
-import { NoGasModal } from "./no-gas-modal";
 
 const RecipientAddress = ({
   openAddressDialog,
@@ -131,7 +131,6 @@ export const BridgeBody = () => {
   const account = useAccount();
   const from = useFromChain();
   const to = useToChain();
-  const bridgeFee = useBridgeFee();
   const bridge = useBridge();
   const switchChain = useSwitchChain();
   const tokens = useActiveTokens();
@@ -161,7 +160,7 @@ export const BridgeBody = () => {
     usePendingTransactions.useUpdateTransactionByHash();
   const nativeToken = useNativeToken();
   const statusCheck = useStatusCheck();
-
+  const bridgeLimit = useBridgeLimit();
   const track = useBridgeControllerTrack();
 
   const initiatingChainId =
@@ -174,6 +173,7 @@ export const BridgeBody = () => {
     address: account.address,
     chainId: to?.id,
   });
+  const baseNativeTokenBalance = useBaseNativeTokenBalance();
   const tokenBalance = useTokenBalance(token);
   const feeData = useEstimateFeesPerGas({
     chainId: initiatingChainId,
@@ -181,13 +181,12 @@ export const BridgeBody = () => {
   const wagmiConfig = useConfig();
 
   const allowance = useAllowance(token, bridge.address);
-  const nftAllowance = useAllowanceNft();
 
   let networkFee: number | undefined;
   if (feeData.data) {
     const gwei =
       (feeData.data.gasPrice ?? feeData.data.maxFeePerGas ?? BigInt(0)) *
-      BigInt(withdrawing ? 200_000 : 150_000);
+      bridge.gas;
     networkFee = parseFloat(formatUnits(gwei, 18));
   }
 
@@ -198,14 +197,9 @@ export const BridgeBody = () => {
     bridge.refetch,
     weiAmount
   );
-  const approveNft = useApproveNft(nftAllowance.refetch, bridge.refetch);
   const usdPrice = useTokenPrice(stateToken);
 
-  const fee = parseInt(((bridgeFee.data as bigint) ?? BigInt(0)).toString());
-
-  const parsedRawAmount = parseFloat(rawAmount) || 0;
-  const appliedFee = (fee / 10_000) * parsedRawAmount;
-  const receive = parsedRawAmount - appliedFee;
+  const receive = parseFloat(rawAmount) || 0;
 
   const hasInsufficientBalance = weiAmount > tokenBalance;
   const hasInsufficientGas =
@@ -213,29 +207,38 @@ export const BridgeBody = () => {
     BigInt(parseUnits(networkFee.toFixed(18), 18)) >
       (fromEthBalance.data?.value ?? BigInt(0));
 
+  const requiredCustomGasTokenBalance = useRequiredCustomGasTokenBalance();
+  /**
+   * Transferring native gas token to rollup, need to make sure wei + extraAmount is < balance
+   * Transferring token to rollup, need to make sure extraAmount < balance
+   */
+  const hasInsufficientBaseNativeTokenBalance =
+    !!requiredCustomGasTokenBalance &&
+    !!baseNativeTokenBalance.data &&
+    requiredCustomGasTokenBalance > baseNativeTokenBalance.data;
+
   const isCustomToken = useIsCustomToken(stateToken);
   const isCustomTokenFromList = useIsCustomTokenFromList(stateToken);
 
   const onWrite = async () => {
-    if (!account.address || !wallet.data || !bridge.valid || !recipient) {
-      console.warn("Missing connected account");
+    if (
+      !account.address ||
+      !wallet.data ||
+      !bridge.valid ||
+      !bridge.args ||
+      !recipient ||
+      !deployment ||
+      statusCheck
+    ) {
       return;
     }
 
-    if (!withdrawing && account.chainId !== deployment!.l1.id) {
-      await switchChain(deployment!.l1);
-    }
-
-    if (withdrawing && forceViaL1 && account.chainId !== deployment!.l1.id) {
-      await switchChain(deployment!.l1);
-    }
-
-    if (!forceViaL1 && withdrawing && account.chainId !== deployment!.l2.id) {
-      await switchChain(deployment!.l2);
-    }
-
-    if (statusCheck) {
-      return;
+    const initiatingChain =
+      bridge.args.tx.chainId === deployment.l1.id
+        ? deployment.l1
+        : deployment.l2;
+    if (initiatingChain.id !== account.chainId) {
+      await switchChain(initiatingChain);
     }
 
     try {
@@ -366,9 +369,12 @@ export const BridgeBody = () => {
     account: account.address,
     hasInsufficientBalance,
     hasInsufficientGas,
+    hasInsufficientBaseNativeTokenBalance,
     nft,
     recipient,
     weiAmount,
+    limitExceeded:
+      typeof bridgeLimit !== "undefined" && weiAmount > bridgeLimit,
   })
     .with({ disabled: true }, ({ withdrawing }) => ({
       onSubmit: () => {},
@@ -395,6 +401,25 @@ export const BridgeBody = () => {
       buttonText: t("insufficientFunds"),
       disabled: true,
     }))
+    .with({ limitExceeded: true }, () => ({
+      onSubmit: () => {},
+      buttonText: (() => {
+        const token = stateToken?.[from?.id ?? 0];
+        if (!token || !bridgeLimit) {
+          return t("bridgeLimitFallback");
+        }
+
+        const formatted = formatUnits(bridgeLimit, token.decimals);
+        return t("bridgeLimit", {
+          amount: parseInt(formatted).toLocaleString("en", {
+            notation: "compact",
+            compactDisplay: "short",
+          }),
+          symbol: token.symbol,
+        });
+      })(),
+      disabled: true,
+    }))
     .with({ hasInsufficientGas: true }, (d) => ({
       onSubmit: handleSubmitClick,
       buttonText: t("insufficientGas", {
@@ -403,6 +428,13 @@ export const BridgeBody = () => {
       // Let's not disable here because people could actually submit with
       // a lower gas price via their wallet. A little power-usery but important imo
       disabled: false,
+    }))
+    .with({ hasInsufficientBaseNativeTokenBalance: true }, (d) => ({
+      onSubmit: handleSubmitClick,
+      buttonText: t("insufficientGas", {
+        symbol: deployment?.arbitrumNativeToken?.symbol,
+      }),
+      disabled: true,
     }))
     .with({ isSubmitting: true }, (d) => ({
       onSubmit: () => {},
@@ -532,7 +564,7 @@ export const BridgeBody = () => {
             <div>
               {usdPrice && (
                 <span className="text-muted-foreground text-xs font-medium">
-                  ${(parsedRawAmount * usdPrice).toLocaleString("en")}
+                  ${(receive * usdPrice).toLocaleString("en")}
                 </span>
               )}
             </div>
