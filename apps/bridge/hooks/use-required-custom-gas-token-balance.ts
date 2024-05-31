@@ -33,7 +33,6 @@ export const useRequiredCustomGasTokenBalance = () => {
   const baseToken = stateToken?.[from?.id ?? 0];
   if (
     !deployment ||
-    !isArbitrum(deployment) ||
     !deployment.arbitrumNativeToken ||
     !gasToken ||
     withdrawing ||
