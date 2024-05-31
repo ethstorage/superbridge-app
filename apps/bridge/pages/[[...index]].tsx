@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import {
   bridgeControllerGetDeployments,
   bridgeControllerGetDeploymentsByDomain,
+  bridgeControllerGetDeploymentsByWeb3,
 } from "@/codegen";
 import { DeploymentsGrid } from "@/components/Deployments";
 import { ErrorComponent } from "@/components/Error";
@@ -21,6 +22,7 @@ import { useDeployment } from "@/hooks/use-deployment";
 import { useDeployments } from "@/hooks/use-deployments";
 import { InjectedStoreProvider } from "@/state/injected";
 import { ThemeProvider } from "@/state/theme";
+
 
 export const SUPERCHAIN_MAINNETS = [
   "optimism",
@@ -54,14 +56,18 @@ export const SUPERCHAIN_TESTNETS = [
   "mint-sepolia-testnet-ijtsrc4ffq",
 ];
 
+function isNativeGasToken() {
+  return true;
+}
+
 export const getServerSideProps = async ({
   req,
 }: GetServerSidePropsContext) => {
   const ignored = ["favicon", "locales", "_vercel", "_next"];
   if (
-    !req.url ||
-    !req.headers.host ||
-    ignored.find((x) => req.url?.includes(x))
+      !req.url ||
+      !req.headers.host ||
+      ignored.find((x) => req.url?.includes(x))
   )
     return { props: { deployments: [] } };
 
@@ -74,12 +80,17 @@ export const getServerSideProps = async ({
       return { props: { deployments: data, testnets: true } };
     }
     const names =
-      req.headers.host === "testnets.superbridge.app"
-        ? SUPERCHAIN_TESTNETS
-        : SUPERCHAIN_MAINNETS;
+        req.headers.host === "testnets.superbridge.app"
+            ? SUPERCHAIN_TESTNETS
+            : SUPERCHAIN_MAINNETS;
     const { data } = await bridgeControllerGetDeployments({
       names,
     });
+    return { props: { deployments: data } };
+  }
+
+  if (isNativeGasToken()) {
+    const { data } = await bridgeControllerGetDeploymentsByWeb3();
     return { props: { deployments: data } };
   }
 
@@ -96,8 +107,8 @@ export const getServerSideProps = async ({
   // [id].devnets.superbridge|rollbridge.app
   // [id].test.devnets.superbridge|rollbridge.app
   if (
-    req.headers.host.includes("devnets.superbridge.app") ||
-    req.headers.host.includes("devnets.rollbridge.app")
+      req.headers.host.includes("devnets.superbridge.app") ||
+      req.headers.host.includes("devnets.rollbridge.app")
   ) {
     const { data } = await bridgeControllerGetDeployments({
       names: [id],
@@ -108,8 +119,8 @@ export const getServerSideProps = async ({
   // [id].testnets.superbridge|rollbridge.app
   // [id].test.testnets.superbridge|rollbridge.app
   if (
-    req.headers.host.includes("testnets.superbridge.app") ||
-    req.headers.host.includes("testnets.rollbridge.app")
+      req.headers.host.includes("testnets.superbridge.app") ||
+      req.headers.host.includes("testnets.rollbridge.app")
   ) {
     const { data } = await bridgeControllerGetDeployments({
       names: [id],
@@ -120,8 +131,8 @@ export const getServerSideProps = async ({
   // [id].mainnets.superbridge|rollbridge.app
   // [id].test.mainnets.superbridge|rollbridge.app
   if (
-    req.headers.host.includes("mainnets.superbridge.app") ||
-    req.headers.host.includes("mainnets.rollbridge.app")
+      req.headers.host.includes("mainnets.superbridge.app") ||
+      req.headers.host.includes("mainnets.rollbridge.app")
   ) {
     const { data } = await bridgeControllerGetDeployments({
       names: [id],
@@ -130,7 +141,7 @@ export const getServerSideProps = async ({
   }
 
   const { data } = await bridgeControllerGetDeploymentsByDomain(
-    req.headers.host
+      req.headers.host
   );
 
   return { props: { deployments: data } };

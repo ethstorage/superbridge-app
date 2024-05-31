@@ -1,0 +1,218 @@
+[
+  {
+    "id": "565cc629-353a-475b-86fe-8873e08ef2d0",
+    "createdAt": "2023-12-22T11:37:35.756Z",
+    "name": "op-sepolia",
+    "displayName": "OP Sepolia",
+    "conduitId": null,
+    "l1": {
+      "id": 11155111,
+      "name": "Sepolia",
+      "network": "sepolia",
+      "rpcUrls": {
+        "infura": {
+          "http": [
+            "https://sepolia.infura.io/v3"
+          ],
+          "webSocket": [
+            "wss://sepolia.infura.io/ws/v3"
+          ]
+        },
+        "public": {
+          "http": [
+            "https://sepolia.drpc.org",
+            "https://eth-sepolia.public.blastapi.io"
+          ]
+        },
+        "alchemy": {
+          "http": [
+            "https://eth-sepolia.g.alchemy.com/v2"
+          ],
+          "webSocket": [
+            "wss://eth-sepolia.g.alchemy.com/v2"
+          ]
+        },
+        "default": {
+          "http": [
+            "https://sepolia.drpc.org",
+            "https://eth-sepolia.public.blastapi.io"
+          ]
+        }
+      },
+      "testnet": true,
+      "contracts": {
+        "multicall3": {
+          "address": "0xca11bde05977b3631167028862be2a173976ca11",
+          "blockCreated": 751532
+        },
+        "ensRegistry": {
+          "address": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+        },
+        "ensUniversalResolver": {
+          "address": "0x21B000Fd62a880b2125A61e36a284BB757b76025",
+          "blockCreated": 3914906
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "url": "https://sepolia.etherscan.io",
+          "name": "Etherscan"
+        },
+        "etherscan": {
+          "url": "https://sepolia.etherscan.io",
+          "name": "Etherscan"
+        }
+      },
+      "nativeCurrency": {
+        "name": "Sepolia Ether",
+        "symbol": "SETH",
+        "decimals": 18
+      }
+    },
+    "l2": {
+      "id": 42069,
+      "name": "Optimism Sepolia",
+      "network": "optimism-sepolia",
+      "rpcUrls": {
+        "public": {
+          "http": [
+            "http://142.132.154.16:8545"
+          ]
+        },
+        "default": {
+          "http": [
+            "http://142.132.154.16:8545"
+          ]
+        }
+      },
+      "testnet": true,
+      "contracts": {
+        "multicall3": {
+          "address": "0xE112C3F43986968864386D0764Ac217a19eAF7b6",
+          "blockCreated": 1620204
+        }
+      },
+      "formatters": {
+        "block": {
+          "type": "block"
+        },
+        "transaction": {
+          "type": "transaction"
+        },
+        "transactionReceipt": {
+          "type": "transactionReceipt"
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "url": "http://142.132.154.16",
+          "name": "Blockscout"
+        },
+        "blockscout": {
+          "url": "http://142.132.154.16",
+          "name": "Blockscout"
+        }
+      },
+      "nativeCurrency": {
+        "name": "QuarkChain",
+        "symbol": "QKC",
+        "decimals": 18
+      }
+    },
+    "contractAddresses": {
+      "l2": {
+        "L2StandardBridge": "0x4200000000000000000000000000000000000800",
+        "L2ToL1MessagePasser": "0x4200000000000000000000000000000000000016"
+      },
+      "bondManager": "0x0000000000000000000000000000000000000000",
+      "systemConfig": "0xC09AaA3E5F27BD49411063BB8456e627857f3d3E",
+      "addressManager": "0xd37a90FD4ed35B4b782B6E620ccaAA8cc49Ae11f",
+      "l2OutputOracle": "0x05D060E72B23C324c2CE1d904339686B31830f4F",
+      "optimismPortal": "0x9eD5C0fD5b1e6852744819a9F33573f69D5345AF",
+      "l1StandardBridge": "0xFafD9BB92C37d147b99EfA1D5B60005D995Ee80c",
+      "disputeGameFactory": "0x4D08013D127Ceb8fb7a308B04faa28Fe1C1E34dD",
+      "stateCommitmentChain": "0x0000000000000000000000000000000000000000",
+      "l1CrossDomainMessenger": "0x7AB850bf4c1979Ad92183C23cC5c9168C011D023",
+      "canonicalTransactionChain": "0x0000000000000000000000000000000000000000"
+    },
+    "config": {
+      "blockTimeSeconds": 2,
+      "finalizationPeriodSeconds": 604800,
+      "submissionIntervalSeconds": 1800
+    },
+    "type": "testnet",
+    "family": "optimism",
+    "supportsNftBridging": false,
+    "theme": {
+      "id": "9fae3d6f-71e4-4dc3-8d73-92065c2dada1",
+      "createdAt": "2024-04-28T04:32:16.588Z",
+      "updatedAt": "2024-04-29T06:14:05.119Z",
+      "theme": {
+        "card": "hsl(0 0% 100%)",
+        "ring": "hsl(240 5.9% 10%)",
+        "input": "hsl(240 5.9% 90%)",
+        "muted": "hsl(240 4.8% 95.9%)",
+        "accent": "hsl(240 4.8% 95.9%)",
+        "border": "hsl(240 5.9% 90%)",
+        "radius": "0.075",
+        "imageOg": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/12603e52f3d4adc61e9a0.png",
+        "popover": "hsl(0 0% 100%)",
+        "primary": "hsl(240 5.9% 10%)",
+        "card-dark": "rgba(24, 24, 27, 1)",
+        "imageLogo": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/04845adc45dbfef0f6ae2.svg",
+        "ring-dark": "rgba(63, 63, 70, 1)",
+        "secondary": "hsl(240 4.8% 95.9%)",
+        "background": "rgba(255, 4, 32, 1)",
+        "foreground": "hsl(240 10% 3.9%)",
+        "input-dark": "rgba(38, 38, 38, 1)",
+        "muted-dark": "rgba(38, 38, 38, 1)",
+        "accent-dark": "hsl(240 3.7% 15.9%)",
+        "border-dark": "rgba(63, 63, 70, 1)",
+        "destructive": "hsl(0 84.2% 60.2%)",
+        "imageNetwork": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/845adc45dbfef0f6ae2c5.svg",
+        "popover-dark": "rgba(24, 24, 27, 1)",
+        "primary-dark": "hsl(0 0% 98%)",
+        "imageLogoDark": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/4845adc45dbfef0f6ae2c.svg",
+        "secondary-dark": "hsl(240 10% 3.9%)",
+        "background-dark": "rgba(10, 10, 10, 1)",
+        "card-foreground": "hsl(240 10% 3.9%)",
+        "darkModeEnabled": true,
+        "foreground-dark": "hsl(0 0% 98%)",
+        "imageBackground": "",
+        "destructive-dark": "hsl(0 62.8% 30.6%)",
+        "muted-foreground": "hsl(240 3.8% 46.1%)",
+        "accent-foreground": "hsl(240 5.9% 10%)",
+        "popover-foreground": "hsl(240 10% 3.9%)",
+        "primary-foreground": "hsl(0 0% 98%)",
+        "backgroundImageSize": "",
+        "imageBackgroundDark": "",
+        "card-foreground-dark": "hsl(0 0% 98%)",
+        "imageSuperbridgeLogo": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/f12603e52f3d4adc61e9a.svg",
+        "secondary-foreground": "hsl(240 5.9% 10%)",
+        "backgroundImageRepeat": "",
+        "muted-foreground-dark": "hsl(240 5% 64.9%)",
+        "accent-foreground-dark": "hsl(0 0% 98%)",
+        "backgroundImageOpacity": "",
+        "destructive-foreground": "hsl(0 0% 98%)",
+        "backgroundImagePosition": "",
+        "popover-foreground-dark": "hsl(0 0% 98%)",
+        "primary-foreground-dark": "hsl(240 5.9% 10%)",
+        "backgroundImageBlendMode": "",
+        "imageSuperbridgeLogoDark": "https://s3.us-east-2.amazonaws.com/assets.rollbridge.app/bae81834e347fb490e0f9.svg",
+        "secondary-foreground-dark": "hsl(0 0% 98%)",
+        "backgroundImageOpacityDark": "",
+        "destructive-foreground-dark": "hsl(0 0% 98%)",
+        "backgroundImageBlendModeDark": ""
+      },
+      "links": []
+    },
+    "tokens": [],
+    "arbitrumNativeToken": {
+      "name": "QuarkChain",
+      "symbol": "QKC",
+      "decimals": 18,
+      "address": "0xe6ABD81D16a20606a661D4e075cdE5734AB62519"
+    },
+    "tos": null
+  }
+]

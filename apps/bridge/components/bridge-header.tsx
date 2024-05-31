@@ -27,10 +27,10 @@ export const BridgeHeader = () => {
               >
                 <div
                   role="button"
-                  className={`rounded-full px-3 py-1 cursor-pointer transition-colors duration-200 flex-1 text-center ${
+                  className={`rounded-full px-3 py-1 cursor-not-allowed transition-colors duration-200 flex-1 text-center ${
                     !withdrawing ? "bg-primary" : "bg-transparent"
                   } `}
-                  onClick={toggleWithdrawing}
+                  // onClick={toggleWithdrawing}
                 >
                   <span
                     className={`text-xs font-medium leading-3 -translate-y-px inline-flex ${
@@ -44,10 +44,10 @@ export const BridgeHeader = () => {
                 </div>
                 <div
                   role="button"
-                  className={`rounded-full px-3 py-1 cursor-pointer transition-colors duration-200 flex-1 text-center ${
+                  className={`rounded-full px-3 py-1 cursor-not-allowed transition-colors duration-200 flex-1 text-center ${
                     withdrawing ? "bg-primary" : "bg-transparent"
                   }`}
-                  onClick={toggleWithdrawing}
+                  // onClick={toggleWithdrawing}
                 >
                   <span
                     className={`text-xs font-medium leading-3 -translate-y-px inline-flex  ${
