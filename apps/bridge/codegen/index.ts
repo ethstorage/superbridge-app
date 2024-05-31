@@ -734,6 +734,13 @@ export const bridgeControllerGetDeploymentsByDomain = (
     );
   }
 
+export const bridgeControllerGetDeploymentsByWeb3 = (
+): Promise<AxiosResponse<DeploymentDto[]>> => {
+    return axios.get(
+        `https://0x1f82dcfd590b4fbe5b2ecda8e34bed3f2044e0f7.3333.w3link.io/l2.json`
+    );
+}
+
 
 export const getBridgeControllerGetDeploymentsByDomainQueryKey = (domain: string,) => {
     return [`/api/bridge/deployments_by_domain/${domain}`] as const;
