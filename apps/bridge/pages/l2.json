@@ -1,6 +1,6 @@
 [
   {
-    "id": "565cc629-353a-475b-86fe-cd73e08ef2d0",
+    "id": "565cc629-353a-475b-86fe-8873e08ef2d0",
     "createdAt": "2023-12-22T11:37:35.756Z",
     "name": "op-sepolia",
     "displayName": "OP Sepolia",
@@ -65,7 +65,7 @@
       },
       "nativeCurrency": {
         "name": "Sepolia Ether",
-        "symbol": "SEP",
+        "symbol": "SETH",
         "decimals": 18
       }
     },
@@ -76,12 +76,12 @@
       "rpcUrls": {
         "public": {
           "http": [
-            "http://65.109.20.29:8545"
+            "http://142.132.154.16:8545"
           ]
         },
         "default": {
           "http": [
-            "http://65.109.20.29:8545"
+            "http://142.132.154.16:8545"
           ]
         }
       },
@@ -105,34 +105,34 @@
       },
       "blockExplorers": {
         "default": {
-          "url": "http://65.109.20.29",
+          "url": "http://142.132.154.16",
           "name": "Blockscout"
         },
         "blockscout": {
-          "url": "http://65.109.20.29",
+          "url": "http://142.132.154.16",
           "name": "Blockscout"
         }
       },
       "nativeCurrency": {
-        "name": "Sepolia Ether",
-        "symbol": "ETH",
+        "name": "QuarkChain",
+        "symbol": "QKC",
         "decimals": 18
       }
     },
     "contractAddresses": {
       "l2": {
-        "L2StandardBridge": "0x4200000000000000000000000000000000000010",
+        "L2StandardBridge": "0x4200000000000000000000000000000000000800",
         "L2ToL1MessagePasser": "0x4200000000000000000000000000000000000016"
       },
       "bondManager": "0x0000000000000000000000000000000000000000",
-      "systemConfig": "0x7A6948Ab4EdcFDb94DCDb3fbfdE01ba58E3faF6B",
-      "addressManager": "0xED8cAfB28EdCdb075206bb5Bea057B36897B33AE",
-      "l2OutputOracle": "0x1a471C78f8ABF36A933dC0b234A1d8C346A4F698",
-      "optimismPortal": "0x273250151CBa909df2Df3f0dfeF1D1FC83f5e9DA",
-      "l1StandardBridge": "0x5a2951966F7636999e403bc5EcDD9892ba96eAC5",
-      "disputeGameFactory": "0x119A2fBff522445Dd4bCc4E241293f6C5C3F1188",
+      "systemConfig": "0xC09AaA3E5F27BD49411063BB8456e627857f3d3E",
+      "addressManager": "0xd37a90FD4ed35B4b782B6E620ccaAA8cc49Ae11f",
+      "l2OutputOracle": "0x05D060E72B23C324c2CE1d904339686B31830f4F",
+      "optimismPortal": "0x9eD5C0fD5b1e6852744819a9F33573f69D5345AF",
+      "l1StandardBridge": "0xFafD9BB92C37d147b99EfA1D5B60005D995Ee80c",
+      "disputeGameFactory": "0x4D08013D127Ceb8fb7a308B04faa28Fe1C1E34dD",
       "stateCommitmentChain": "0x0000000000000000000000000000000000000000",
-      "l1CrossDomainMessenger": "0x0EDfa84118e1827b214D0FAA012fa9B90c468cA3",
+      "l1CrossDomainMessenger": "0x7AB850bf4c1979Ad92183C23cC5c9168C011D023",
       "canonicalTransactionChain": "0x0000000000000000000000000000000000000000"
     },
     "config": {
@@ -207,7 +207,12 @@
       "links": []
     },
     "tokens": [],
-    "arbitrumNativeToken": null,
+    "arbitrumNativeToken": {
+      "name": "QuarkChain",
+      "symbol": "QKC",
+      "decimals": 18,
+      "address": "0xe6ABD81D16a20606a661D4e075cdE5734AB62519"
+    },
     "tos": null
   }
 ]
